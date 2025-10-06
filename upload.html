@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpendWise - Upload</title>
+    <link rel="stylesheet" href="upload.css"> 
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header>
+    <div class="left-nav-buttons"> 
+        <button id="profileBtn" class="header-nav-btn">My Profile</button>
+        <button id="homeBtn" class="header-nav-btn">Upload Data</button>
+    </div>
+    <div class="header-title">SpendWise</div>
+    <div class="nav-buttons">
+        <button id="manageBtn" class="header-nav-btn">Manager</button>
+        <button id="analyzeBtn" class="header-nav-btn">Analysis</button>
+        <button id="predictBtn" class="header-nav-btn">Prediction</button>
+        </div>
+</header>
+
+<main>
+    <div class="upload-container">
+        <h2>Upload Your Financial Statement (CSV)</h2>
+        <div id="file-message" class="error-message"></div>
+        <input type="file" id="fileInput" accept=".csv" />
+        <br>
+        <button id="uploadBtn" disabled>Process Data</button>
+        <p class="file-note">(Required columns: 'Date', 'Category', 'Amount', and 'Description')</p>
+    </div>
+</main>
+
+<script type="module" src="upload.js"></script>
+<script type="module">
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // Navigation redirects & Auth Guard
+    document.getElementById('profileBtn').addEventListener('click', () => { window.location.href = 'profile.html'; });
+    document.getElementById('homeBtn').addEventListener('click', () => { window.location.href = 'upload.html'; });
+    document.getElementById("manageBtn").addEventListener("click", () => { window.location.href = "manager.html"; });
+    document.getElementById("analyzeBtn").addEventListener("click", () => { window.location.href = "analysis.html"; });
+    document.getElementById("predictBtn").addEventListener("click", () => { window.location.href = "prediction.html"; });
+
+    // Dynamic Logout Button Creation (Standard across all content pages)
+    window.onload = () => {
+        try {
+            const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+            
+            onAuthStateChanged(auth, (user) => {
+                const navButtons = document.querySelector('.nav-buttons');
+                let logoutBtn = document.getElementById('logoutBtn');
+                
+                if (!user || !user.email) {
+                    // Check local storage for the demo user
+                    if (!localStorage.getItem('currentUser')) {
+                        window.location.href = 'index.html'; // REDIRECT to new index.html (Login)
+                    }
+                } else {
+                    if (!logoutBtn) {
+                       logoutBtn = document.createElement('button');
+                       logoutBtn.id = 'logoutBtn';
+                       logoutBtn.className = 'header-nav-btn';
+                       logoutBtn.textContent = 'Sign Out';
+                       navButtons.appendChild(logoutBtn);
+                       
+                       logoutBtn.addEventListener('click', async () => {
+                           await signOut(auth);
+                           localStorage.removeItem('currentUser');
+                       });
+                    }
+                }
+            });
+        } catch (error) {
+            console.warn("Firebase check failed. Ensure Firebase config is available.");
+            // Non-Firebase path: Check if local storage user exists
+            if (!localStorage.getItem('currentUser')) {
+                setTimeout(() => { 
+                    if (!localStorage.getItem('currentUser')) {
+                        window.location.href = 'index.html'; // REDIRECT to new index.html (Login)
+                    }
+                }, 500);
+            }
+        }
+    };
+</script>
+</body>
+</html>

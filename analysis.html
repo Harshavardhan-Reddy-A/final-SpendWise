@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>analysis.html</title>
+  <link rel="stylesheet" href="analysis.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <header>
+    <div class="left-nav-buttons"> 
+        <button id="profileBtn" class="header-nav-btn">My Profile</button>
+        <button id="homeBtn" class="header-nav-btn">Upload Data</button>
+    </div>
+    <div class="header-title">SpendWise</div>
+    <div class="nav-buttons">
+        <button id="manageBtn" class="header-nav-btn">Manager</button>
+        <button id="analyzeBtn" class="header-nav-btn">Analysis</button>
+        <button id="predictBtn" class="header-nav-btn">Prediction</button>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <aside class="sidebar">
+      <div class="period-select">
+        <div class="period-item">
+            <label for="scopeSelect">Analysis Scope:</label>
+            <select id="scopeSelect">
+            <option value="monthly" selected>Monthly Analysis</option>
+            <option value="yearly">Annual Analysis</option>
+            <option value="weekly">Weekly Analysis</option>
+            </select>
+        </div>
+        
+        <div class="period-item" id="yearSelectorContainer">
+            <label for="yearSelect" id="yearLabel">Year:</label>
+            <select id="yearSelect"></select>
+        </div>
+
+        <div class="period-item" id="monthSelectorContainer">
+            <label for="monthSelect" id="monthLabel">Month:</label>
+            <select id="monthSelect"></select>
+        </div>
+        
+        <div class="period-item" id="weekSelectorContainer" style="display: none;">
+            <label for="weekSelect" id="weekLabel">Week:</label>
+            <select id="weekSelect"></select>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <h2 id="analysisTitle">Monthly Financial Analysis</h2>
+      
+      <div class="analysis-grid"> <div class="card"> 
+          <h3>Expenditure Split by Category</h3>
+          <div id="pieChart">[Category split will go here]</div>
+        </div>
+        <div class="card"> 
+          <h3 id="trendTitle">Weekly Spending Trend</h3>
+          <div id="trendGraph">[Trend graph will go here]</div>
+        </div>
+        
+        <div class="card" id="scatterPlotCard"> 
+          <h3>Transaction Distribution (Amount vs Day)</h3>
+          <div id="scatterPlotContainer" class="chart-content">
+            <canvas id="scatterPlotCanvas" width="300" height="200"></canvas>
+            <div id="scatterLegend" class="chart-legend"></div>
+          </div>
+        </div>
+        
+      </div>
+
+      <div class="card full-width"> 
+        <h3>Detailed Transaction Statement</h3>
+        <div class="table-container">
+          <table id="statementTable"></table>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <script type="module" src="analysis.js"></script>
+  <script type="module">
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // Navigation redirects & Auth Guard
+    document.getElementById('profileBtn').addEventListener('click', () => { window.location.href = 'profile.html'; });
+    document.getElementById('homeBtn').addEventListener('click', () => { window.location.href = 'upload.html'; }); // UPDATED
+    document.getElementById("manageBtn").addEventListener("click", () => { window.location.href = "manager.html"; });
+    document.getElementById("analyzeBtn").addEventListener("click", () => { window.location.href = "analysis.html"; });
+    document.getElementById("predictBtn").addEventListener("click", () => { window.location.href = "prediction.html"; });
+
+    // Dynamic Logout Button Creation (Standard across all content pages)
+    window.onload = () => {
+        try {
+            const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+            
+            onAuthStateChanged(auth, (user) => {
+                const navButtons = document.querySelector('.nav-buttons');
+                let logoutBtn = document.getElementById('logoutBtn');
+                
+                if (!user || !user.email) {
+                    // Check local storage for the demo user
+                    if (!localStorage.getItem('currentUser')) {
+                        window.location.href = 'index.html'; // UPDATED REDIRECT
+                    }
+                } else {
+                    if (!logoutBtn) {
+                       logoutBtn = document.createElement('button');
+                       logoutBtn.id = 'logoutBtn';
+                       logoutBtn.className = 'header-nav-btn';
+                       logoutBtn.textContent = 'Sign Out';
+                       navButtons.appendChild(logoutBtn);
+                       
+                       logoutBtn.addEventListener('click', async () => {
+                           await signOut(auth);
+                           localStorage.removeItem('currentUser');
+                       });
+                    }
+                }
+            });
+        } catch (error) {
+            console.warn("Firebase check failed. Ensure Firebase config is available.");
+            // Non-Firebase path: Check if local storage user exists
+            if (!localStorage.getItem('currentUser')) {
+                setTimeout(() => { 
+                    if (!localStorage.getItem('currentUser')) {
+                        window.location.href = 'index.html'; // UPDATED REDIRECT
+                    }
+                }, 500);
+            }
+        }
+    };
+  </script>
+</body>
+</html>

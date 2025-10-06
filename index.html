@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SpendWise - Login</title>
+  <style>
+    /* ---- GLOBAL ---- */
+    body {
+      margin: 0;
+      font-family: "Inter", Arial, sans-serif;
+      background-color: #fafafa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    /* ---- CONTAINER ---- */
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+      padding: 40px 30px;
+      width: 360px;
+      text-align: center;
+    }
+
+    h2 {
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #000;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      margin: 8px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    input:focus {
+      border-color: #000;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 12px;
+      background: #000;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    button:hover {
+      opacity: 0.8;
+    }
+
+    .toggle-link {
+      margin-top: 15px;
+      display: inline-block;
+      color: #007BFF;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .warning {
+      color: red;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        width: 90%;
+        padding: 30px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="card" id="loginContainer">
+    <h2>SpendWise Login</h2>
+    <p class="warning">Your data is stored locally (for demo use).</p>
+    <input type="text" id="loginPhone" placeholder="Phone Number" maxlength="10" />
+    <input type="password" id="loginPin" placeholder="6-digit PIN" maxlength="6" />
+    <button onclick="login()">Login</button>
+    <span class="toggle-link" onclick="showSignup()">Create a new account</span>
+  </div>
+
+  <div class="card" id="signupContainer" style="display: none;">
+    <h2>Create Account</h2>
+    <p class="warning">All fields are required.</p>
+    <input type="text" id="signupName" placeholder="Full Name" />
+    <input type="text" id="signupBank" placeholder="Bank Account Number" />
+    <input type="text" id="signupPhone" placeholder="Phone Number" maxlength="10" />
+    <input type="password" id="signupPin" placeholder="6-digit PIN" maxlength="6" />
+    <button onclick="createAccount()">Create Account</button>
+    <span class="toggle-link" onclick="showLogin()">Already have an account? Login</span>
+  </div>
+
+  <script>
+    function showSignup() {
+      document.getElementById("loginContainer").style.display = "none";
+      document.getElementById("signupContainer").style.display = "block";
+    }
+    function showLogin() {
+      document.getElementById("signupContainer").style.display = "none";
+      document.getElementById("loginContainer").style.display = "block";
+    }
+
+    function createAccount() {
+      const name = document.getElementById("signupName").value.trim();
+      const bank = document.getElementById("signupBank").value.trim();
+      const phone = document.getElementById("signupPhone").value.trim();
+      const pin = document.getElementById("signupPin").value.trim();
+
+      if (!name || !bank || !phone || !pin) {
+        alert("Please fill all fields.");
+        return;
+      }
+      if (pin.length !== 6) {
+        alert("PIN must be 6 digits.");
+        return;
+      }
+
+      let users = JSON.parse(localStorage.getItem("users")) || [];
+      if (users.find(u => u.phone === phone)) {
+        alert("Account with this phone number already exists!");
+        return;
+      }
+
+      users.push({ name, bank, phone, pin });
+      localStorage.setItem("users", JSON.stringify(users));
+      alert("Account created successfully! Please login.");
+      showLogin();
+    }
+
+    function login() {
+      const phone = document.getElementById("loginPhone").value.trim();
+      const pin = document.getElementById("loginPin").value.trim();
+
+      let users = JSON.parse(localStorage.getItem("users")) || [];
+      const user = users.find(u => u.phone === phone && u.pin === pin);
+
+      if (user) {
+        localStorage.setItem("currentUser", JSON.stringify(user));
+        alert(`Welcome, ${user.name}!`);
+        // REDIRECT TO THE NEW UPLOAD PAGE
+        window.location.href = "upload.html"; 
+      } else {
+        alert("Invalid phone number or PIN.");
+      }
+    }
+  </script>
+</body>
+</html>

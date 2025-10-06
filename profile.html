@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpendWise - My Profile</title>
+    <link rel="stylesheet" href="upload.css"> 
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Profile Specific Styles - Copying from upload-container for consistency */
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            /* Adjust height to account for header (approx 65px) */
+            height: calc(100vh - 65px); 
+            box-sizing: border-box;
+        }
+        .profile-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            width: 100%;
+            max-width: 450px;
+            box-sizing: border-box;
+            border: 1px solid #e0e0e0;
+        }
+        .profile-container h2 {
+            margin-bottom: 25px;
+            color: #000000;
+            font-size: 1.8em;
+            font-weight: 700;
+            text-align: center;
+        }
+        .profile-detail {
+            margin-bottom: 20px;
+            padding: 10px 0;
+            border-bottom: 1px solid #eeeeee;
+        }
+        .profile-detail:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .profile-detail label {
+            font-weight: 600;
+            color: #666666;
+            display: block;
+            font-size: 0.9em;
+            margin-bottom: 3px;
+        }
+        .profile-detail p {
+            font-size: 1.1em;
+            color: #000000;
+            margin: 0;
+            font-weight: 500;
+        }
+        .profile-error {
+            color: #dc3545;
+            text-align: center;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="left-nav-buttons"> 
+        <button id="profileBtn" class="header-nav-btn">My Profile</button>
+        <button id="homeBtn" class="header-nav-btn">Upload Data</button>
+    </div>
+    <div class="header-title">SpendWise</div>
+    <div class="nav-buttons">
+        <button id="manageBtn" class="header-nav-btn">Manager</button>
+        <button id="analyzeBtn" class="header-nav-btn">Analysis</button>
+        <button id="predictBtn" class="header-nav-btn">Prediction</button>
+    </div>
+</header>
+
+<main>
+    <div class="profile-container">
+        <h2>User Profile</h2>
+        <div id="profileDetails">
+            <p style="text-align: center; color: #666;">Loading user details...</p>
+        </div>
+    </div>
+</main>
+
+<script type="module" src="profile.js"></script>
+<script type="module">
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // Navigation redirects & Auth Guard
+    document.getElementById('profileBtn').addEventListener('click', () => { window.location.href = 'profile.html'; });
+    document.getElementById('homeBtn').addEventListener('click', () => { window.location.href = 'upload.html'; }); // UPDATED
+    document.getElementById("manageBtn").addEventListener("click", () => { window.location.href = "manager.html"; });
+    document.getElementById("analyzeBtn").addEventListener("click", () => { window.location.href = "analysis.html"; });
+    document.getElementById("predictBtn").addEventListener("click", () => { window.location.href = "prediction.html"; });
+
+    // Dynamic Logout Button Creation (Standard across all content pages)
+    window.onload = () => {
+        try {
+            const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+            
+            onAuthStateChanged(auth, (user) => {
+                const navButtons = document.querySelector('.nav-buttons');
+                let logoutBtn = document.getElementById('logoutBtn');
+                
+                if (!user || !user.email) {
+                    // Check local storage for the non-Firebase user.
+                    if (!localStorage.getItem('currentUser')) {
+                        window.location.href = 'index.html'; // UPDATED REDIRECT
+                    }
+                } else {
+                    if (!logoutBtn) {
+                       logoutBtn = document.createElement('button');
+                       logoutBtn.id = 'logoutBtn';
+                       logoutBtn.className = 'header-nav-btn';
+                       logoutBtn.textContent = 'Sign Out';
+                       navButtons.appendChild(logoutBtn);
+                       
+                       logoutBtn.addEventListener('click', async () => {
+                           await signOut(auth);
+                           // Also clear local storage user for the demo auth system
+                           localStorage.removeItem('currentUser');
+                       });
+                    }
+                }
+            });
+        } catch (error) {
+            console.warn("Firebase check failed. Ensure Firebase config is available.");
+            // Non-Firebase path: Check if local storage user exists
+            if (!localStorage.getItem('currentUser')) {
+                // If the app is using the local storage login system and no user is set, redirect.
+                setTimeout(() => { 
+                    if (!localStorage.getItem('currentUser')) {
+                        window.location.href = 'index.html'; // UPDATED REDIRECT
+                    }
+                }, 500);
+            }
+        }
+    };
+</script>
+</body>
+</html>

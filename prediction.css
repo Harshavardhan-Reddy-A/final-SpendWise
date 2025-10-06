@@ -1,0 +1,251 @@
+/* prediction.css */
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: #ffffff;
+    color: #000000;
+}
+
+/* Header - Removed black background, only white and black text */
+header {
+  background-color: #ffffff;
+  color: #000000;
+  text-align: center;
+  padding: 15px 20px; 
+  font-size: 32px;
+  font-weight: bold;
+  position: relative;
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #eeeeee;
+}
+
+.header-title {
+    flex-grow: 1; 
+    text-align: center;
+}
+
+.header-nav-btn {
+    padding: 8px 15px;
+    font-size: 0.8em;
+    border: 1px solid #000000;
+    border-radius: 6mm;
+    background-color: transparent;
+    color: #000000;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    white-space: nowrap;
+}
+
+.header-nav-btn:hover {
+    background-color: #28a745;
+    color: white;
+    border-color: #28a745;
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+/* NEW: Wrapper for My Profile and Upload Data buttons */
+.left-nav-buttons {
+    display: flex;
+    gap: 10px; 
+}
+
+@media (max-width: 768px) {
+    header {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .header-title {
+        order: -3; 
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    .left-nav-buttons { /* NEW positioning */
+        order: -2; 
+        justify-content: center;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    .nav-buttons {
+        order: -1;
+        justify-content: center;
+        width: 100%;
+    }
+    .header-nav-btn {
+        flex: 1;
+    }
+}
+/* END Header */
+
+
+/* Main Layout */
+.container {
+    display: flex;
+    min-height: calc(100vh - 65px);
+    padding: 20px;
+    gap: 20px;
+    box-sizing: border-box;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 280px; 
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Prediction Select */
+.prediction-select {
+    margin-top: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    border: 1px solid #e0e0e0;
+}
+
+.period-item { 
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.period-item label {
+    font-weight: 600;
+    color: #000000;
+    margin-top: 5px;
+}
+
+.period-item input[type="text"],
+.period-item input[type="number"],
+.period-item select {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #cccccc;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.period-item button {
+    background-color: #000000; 
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 1em;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 15px;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.period-item button:hover {
+    background-color: #28a745;
+}
+
+
+/* Main Area */
+.main-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.main-area h2 {
+    color: #000000;
+    margin-bottom: 10px;
+    font-size: 1.8em;
+    font-weight: 700;
+}
+
+/* Card Styling */
+.card {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #e0e0e0;
+}
+
+.card h3 {
+    font-size: 1.2em;
+    color: #000000;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+
+#predictionResultContent {
+    min-height: 100px;
+    text-align: center; 
+}
+
+#modelDetailsContent {
+    text-align: left;
+    font-size: 0.95em;
+    line-height: 1.6;
+    color: #555555;
+}
+
+/* Prediction Table */
+.prediction-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 0.95em;
+    text-align: left;
+    border-radius: 8px;
+    overflow: hidden; 
+}
+
+.prediction-table th,
+.prediction-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.prediction-table th {
+    background-color: #f4f4f4;
+    color: #000000;
+    font-weight: 600;
+    text-align: center;
+}
+
+.prediction-table td {
+    color: #555555;
+    text-align: center;
+}
+
+.prediction-table .forecast-value {
+    font-weight: bold;
+    color: #dc3545; /* Red for prediction alert */
+}
+
+.prediction-table .total-row {
+    background-color: #f4f4f4; /* Light background for total row */
+    border-top: 3px solid #000000; 
+    font-size: 1.05em;
+}
+
+.prediction-table .total-row .forecast-value {
+    color: #28a745; /* Green for total/safe prediction */
+    font-size: 1.1em;
+}
