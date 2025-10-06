@@ -11,14 +11,12 @@ function displayUserDetails() {
                 User data not found in local storage. Please log in again.
             </p>
         `;
-        // In a real app, this would redirect to login.
         return;
     }
 
     try {
         const user = JSON.parse(userData);
 
-        // Display the details, omitting the sensitive PIN
         profileDetailsDiv.innerHTML = `
             <div class="profile-detail">
                 <label>Full Name</label>
