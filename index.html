@@ -91,8 +91,8 @@
   <div class="card" id="loginContainer">
     <h2>SpendWise Login</h2>
     <p class="warning">Your data is stored locally (for demo use).</p>
-    <input type="text" id="loginPhone" placeholder="Phone Number" maxlength="10" />
-    <input type="password" id="loginPin" placeholder="6-digit PIN" maxlength="6" />
+    <input type="text" id="loginPhone" placeholder="Phone Number" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'');" />
+    <input type="password" id="loginPin" placeholder="6-digit PIN" maxlength="6" oninput="this.value=this.value.replace(/[^0-9]/g,'');" />
     <button onclick="login()">Login</button>
     <span class="toggle-link" onclick="showSignup()">Create a new account</span>
   </div>
@@ -101,9 +101,9 @@
     <h2>Create Account</h2>
     <p class="warning">All fields are required.</p>
     <input type="text" id="signupName" placeholder="Full Name" />
-    <input type="text" id="signupBank" placeholder="Bank Account Number" />
-    <input type="text" id="signupPhone" placeholder="Phone Number" maxlength="10" />
-    <input type="password" id="signupPin" placeholder="6-digit PIN" maxlength="6" />
+    <input type="text" id="signupBank" placeholder="Bank Account Number (12 digits)" maxlength="12" oninput="this.value=this.value.replace(/[^0-9]/g,'');" />
+    <input type="text" id="signupPhone" placeholder="Phone Number (10 digits)" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'');" />
+    <input type="password" id="signupPin" placeholder="6-digit PIN" maxlength="6" oninput="this.value=this.value.replace(/[^0-9]/g,'');" />
     <button onclick="createAccount()">Create Account</button>
     <span class="toggle-link" onclick="showLogin()">Already have an account? Login</span>
   </div>
@@ -113,6 +113,7 @@
       document.getElementById("loginContainer").style.display = "none";
       document.getElementById("signupContainer").style.display = "block";
     }
+
     function showLogin() {
       document.getElementById("signupContainer").style.display = "none";
       document.getElementById("loginContainer").style.display = "block";
@@ -128,8 +129,16 @@
         alert("Please fill all fields.");
         return;
       }
-      if (pin.length !== 6) {
-        alert("PIN must be 6 digits.");
+      if (!/^\d{12}$/.test(bank)) {
+        alert("Bank account number must be exactly 12 digits.");
+        return;
+      }
+      if (!/^\d{10}$/.test(phone)) {
+        alert("Phone number must be exactly 10 digits.");
+        return;
+      }
+      if (!/^\d{6}$/.test(pin)) {
+        alert("PIN must be exactly 6 digits.");
         return;
       }
 
@@ -149,14 +158,22 @@
       const phone = document.getElementById("loginPhone").value.trim();
       const pin = document.getElementById("loginPin").value.trim();
 
+      if (!/^\d{10}$/.test(phone)) {
+        alert("Enter a valid 10-digit phone number.");
+        return;
+      }
+      if (!/^\d{6}$/.test(pin)) {
+        alert("PIN must be exactly 6 digits.");
+        return;
+      }
+
       let users = JSON.parse(localStorage.getItem("users")) || [];
       const user = users.find(u => u.phone === phone && u.pin === pin);
 
       if (user) {
         localStorage.setItem("currentUser", JSON.stringify(user));
         alert(`Welcome, ${user.name}!`);
-        // REDIRECT TO THE NEW UPLOAD PAGE
-        window.location.href = "upload.html"; 
+        window.location.href = "upload.html";
       } else {
         alert("Invalid phone number or PIN.");
       }
